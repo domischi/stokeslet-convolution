@@ -1,2 +1,9 @@
+# Ignore temporary files
 *.swp
 __pycache__
+
+# Ignore files that are experiments: can be used to have a file at root level, calling the other modules
+ex*.py
+
+# Ignore results in data folder
+data/
