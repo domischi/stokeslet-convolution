@@ -4,7 +4,7 @@ import matplotlib.pyplot as plt
 import scipy as sp
 import scipy.integrate
 from tqdm import tqdm
-import numba 
+import numba
 
 @numba.jit
 def stokeslet(x, mu=1.):
@@ -81,4 +81,7 @@ def make_streamplot_with_dblquad(f, xmin=-3, xmax=3, ymin=-3,ymax=3, xres=20, yr
     plt.streamplot(X, Y, Ux, Uy)
 def make_streamplot(f, xmin=-3, xmax=3, ymin=-3,ymax=3, xres=20, yres=20, plot_shape=True):
     X,Y,Ux,Uy=compute_full_velocity_field(f, xmin, xmax, ymin, ymax, xres, yres)
-    plt.streamplot(X,Y,Ux,Uy)
+    if abs(Ux).sum()+abs(Uy).sum()<=0:
+        print(f"Warning: There seems to be an issue with this grid. I'm not plotting anything.\n(xmin={ xmin } ,xmax={ xmax } ,ymin={ ymin } ,ymax={ ymax } ,xres={ xres } ,yres={ yres })")
+    else:
+        plt.streamplot(X,Y,Ux,Uy)
