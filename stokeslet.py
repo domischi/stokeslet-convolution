@@ -50,7 +50,6 @@ def compute_full_velocity_field(f, xmin=-3, xmax=3, ymin=-3,ymax=3, xres=20, yre
             Ux[iu,ju], Uy[iu,ju]=compute_velocity_field_at_point(f,(xu,yu), X,Y)
     return X,Y,Ux,Uy
 
-
 def compute_velocity_field_w_dblquad(x,y, f): 
     """
     Computes the velocity field at point x according by convoluting the force-field f (given as a function mapping R^2 to R^2) with the Stokeslet formulation numerically, using the function dblquad. This raises a few issues, by propagating singular Stokeslets which makes it a bit annoying
@@ -83,9 +82,24 @@ def make_streamplot_with_dblquad(f, xmin=-3, xmax=3, ymin=-3,ymax=3, xres=20, yr
     if plot_shape:
         plt.pcolormesh(X,Y,ind, cmap='Greys', vmin=0, vmax=2)
     plt.streamplot(X, Y, Ux, Uy)
+
+def get_domain(f,X,Y):
+    ind=np.zeros_like(X)
+    for i in range(len(X)):
+        for j in range(len(X[0])):
+            if norm(f((X[i,j],Y[i,j])))>0:
+                ind[i,j]= 1 
+    return ind
 def make_streamplot(f, xmin=-3, xmax=3, ymin=-3,ymax=3, xres=20, yres=20, plot_shape=True):
     X,Y,Ux,Uy=compute_full_velocity_field(f, xmin, xmax, ymin, ymax, xres, yres)
     if abs(Ux).sum()+abs(Uy).sum()<=0:
         print(f"Warning: There seems to be an issue with this grid. I'm not plotting anything.\n(xmin={ xmin } ,xmax={ xmax } ,ymin={ ymin } ,ymax={ ymax } ,xres={ xres } ,yres={ yres })")
     else:
+        if plot_shape:
+            dX=(X[0,1]-X[0,0])/2
+            dY=(Y[1,0]-Y[0,0])/2
+            sX = X+dX # shifted X, for plotting purposes
+            sY = Y+dY # shifted Y, for plotting purposes
+            ind=get_domain(f, sX,sY)
+            plt.pcolormesh(X,Y,ind, cmap='Greys', alpha=.5)
         plt.streamplot(X,Y,Ux,Uy)
