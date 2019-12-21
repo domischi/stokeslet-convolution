@@ -38,7 +38,9 @@ def compute_velocity_field_at_point(f, Xu, int_grid_x, int_grid_y):
     return ux, uy
 
 def compute_full_velocity_field(f, xmin=-3, xmax=3, ymin=-3,ymax=3, xres=20, yres=20): 
-    Y, X = np.mgrid[xmin:xmax:xres*1j, ymin:ymax:yres*1j]
+    X=np.linspace(xmin,xmax,xres)
+    Y=np.linspace(ymin,ymax,yres)
+    X, Y = np.meshgrid(X,Y)
     Ux=np.zeros_like(X)
     Uy=np.zeros_like(X)
     for iu in tqdm(range(len(Ux))):
@@ -62,7 +64,9 @@ def compute_velocity_field_w_dblquad(x,y, f):
     return ux,uy
 
 def make_streamplot_with_dblquad(f, xmin=-3, xmax=3, ymin=-3,ymax=3, xres=20, yres=20, plot_shape=True):
-    Y, X = np.mgrid[xmin:xmax:xres*1j, ymin:ymax:yres*1j]
+    X=np.linspace(xmin,xmax,xres)
+    Y=np.linspace(ymin,ymax,yres)
+    X, Y = np.meshgrid(X,Y)
     Ux=np.zeros_like(X)
     Uy=np.zeros_like(X)
     ind=np.zeros_like(X)
