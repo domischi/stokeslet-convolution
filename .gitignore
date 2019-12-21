@@ -4,6 +4,9 @@ __pycache__
 
 # Ignore files that are experiments: can be used to have a file at root level, calling the other modules
 ex*.py
+*.ipynb
+.ipynb_checkpoints
 
 # Ignore results in data folder
 data/
+
