@@ -43,7 +43,7 @@ def compute_full_velocity_field(f, xmin=-3, xmax=3, ymin=-3,ymax=3, xres=20, yre
     X, Y = np.meshgrid(X,Y)
     Ux=np.zeros_like(X)
     Uy=np.zeros_like(X)
-    for iu in tqdm(range(len(Ux))):
+    for iu in range(len(Ux)):
         for ju in range(len(Ux[0])):
             xu=X[iu,ju]
             yu=Y[iu,ju]
