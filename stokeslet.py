@@ -50,7 +50,7 @@ def compute_full_velocity_field(f, xmin=-3, xmax=3, ymin=-3,ymax=3, xres=20, yre
             Ux[iu,ju], Uy[iu,ju]=compute_velocity_field_at_point(f,(xu,yu), X,Y)
     return X,Y,Ux,Uy
 
-def compute_velocity_field_w_dblquad(x,y, f): 
+def compute_velocity_field_w_dblquad(x,y, f):
     """
     Computes the velocity field at point x according by convoluting the force-field f (given as a function mapping R^2 to R^2) with the Stokeslet formulation numerically, using the function dblquad. This raises a few issues, by propagating singular Stokeslets which makes it a bit annoying
     """
@@ -90,7 +90,31 @@ def get_domain(f,X,Y):
             if norm(f((X[i,j],Y[i,j])))>0:
                 ind[i,j]= 1 
     return ind
-def make_streamplot(f, xmin=-3, xmax=3, ymin=-3,ymax=3, xres=20, yres=20, plot_shape=True):
+
+def get_inflow_matrix(X,Y,Ux,Uy, normalize=True):
+    """
+    Given the velocity field (Ux, Uy) at positions (X,Y), compute for every x in (X,Y) if the position is contributing to the inflow or the outflow. This can be obtained by u*x (scalar product). If this quantity is positive, then it's an outflow, if it is negative it's an inflow.
+    """
+    io=np.zeros_like(X)
+    for i in range(len(X)):
+        for j in range(len(X[0])):
+            io[i,j]= Ux[i,j]*X[i,j] + Uy[i,j]*Y[i,j]
+    if normalize:
+        io_min=io.flatten().min()
+        io_max=io.flatten().max()
+        if io_max>0:
+            for i in range(len(X)):
+                for j in range(len(X[0])):
+                    if io[i,j]>=0:
+                        io[i,j]/=io_max
+        if io_min<0:
+            for i in range(len(X)):
+                for j in range(len(X[0])):
+                    if io[i,j]<=0:
+                        io[i,j]/=io_min
+    return io
+
+def make_streamplot(f, xmin=-3, xmax=3, ymin=-3,ymax=3, xres=20, yres=20, plot_shape=True, plot_io_pattern=False):
     X,Y,Ux,Uy=compute_full_velocity_field(f, xmin, xmax, ymin, ymax, xres, yres)
     if abs(Ux).sum()+abs(Uy).sum()<=0:
         print(f"Warning: There seems to be an issue with this grid. I'm not plotting anything.\n(xmin={ xmin } ,xmax={ xmax } ,ymin={ ymin } ,ymax={ ymax } ,xres={ xres } ,yres={ yres })")
@@ -102,4 +126,9 @@ def make_streamplot(f, xmin=-3, xmax=3, ymin=-3,ymax=3, xres=20, yres=20, plot_s
             sY = Y+dY # shifted Y, for plotting purposes
             ind=get_domain(f, sX,sY)
             plt.pcolormesh(X,Y,ind, cmap='Greys', alpha=.5, edgecolor='none')
+        if plot_io_pattern:
+            io=get_inflow_matrix(X,Y,Ux,Uy)
+            plt.pcolormesh(X,Y,io, cmap='bwr', alpha=.5)
         plt.streamplot(X,Y,Ux,Uy)
+        plt.xlim([xmin,xmax])
+        plt.ylim([ymin,ymax])
