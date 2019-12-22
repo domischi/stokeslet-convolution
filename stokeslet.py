@@ -114,7 +114,7 @@ def get_inflow_matrix(X,Y,Ux,Uy, normalize=True):
                         io[i,j]/=io_min
     return io
 
-def make_streamplot(f, xmin=-3, xmax=3, ymin=-3,ymax=3, xres=20, yres=20, plot_shape=True, plot_io_pattern=False):
+def make_streamplot(f, xmin=-3, xmax=3, ymin=-3,ymax=3, xres=20, yres=20, plot_shape=True, plot_io_pattern=False, quiver_plot=False):
     X,Y,Ux,Uy=compute_full_velocity_field(f, xmin, xmax, ymin, ymax, xres, yres)
     if abs(Ux).sum()+abs(Uy).sum()<=0:
         print(f"Warning: There seems to be an issue with this grid. I'm not plotting anything.\n(xmin={ xmin } ,xmax={ xmax } ,ymin={ ymin } ,ymax={ ymax } ,xres={ xres } ,yres={ yres })")
@@ -129,6 +129,9 @@ def make_streamplot(f, xmin=-3, xmax=3, ymin=-3,ymax=3, xres=20, yres=20, plot_s
         if plot_io_pattern:
             io=get_inflow_matrix(X,Y,Ux,Uy)
             plt.pcolormesh(X,Y,io, cmap='bwr', alpha=.5)
-        plt.streamplot(X,Y,Ux,Uy)
+        if quiver_plot:
+            plt.quiver(X,Y,Ux,Uy)
+        else:
+            plt.streamplot(X,Y,Ux,Uy)
         plt.xlim([xmin,xmax])
         plt.ylim([ymin,ymax])
