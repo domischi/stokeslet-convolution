@@ -80,7 +80,7 @@ def make_streamplot_with_dblquad(f, xmin=-3, xmax=3, ymin=-3,ymax=3, xres=20, yr
                 Ux[i,j]=ux
                 Uy[i,j]=uy
     if plot_shape:
-        plt.pcolormesh(X,Y,ind, cmap='Greys', vmin=0, vmax=2)
+        plt.pcolormesh(X,Y,ind, cmap='Greys', alpha=.5, edgecolor='none')
     plt.streamplot(X, Y, Ux, Uy)
 
 def get_domain(f,X,Y):
@@ -101,5 +101,5 @@ def make_streamplot(f, xmin=-3, xmax=3, ymin=-3,ymax=3, xres=20, yres=20, plot_s
             sX = X+dX # shifted X, for plotting purposes
             sY = Y+dY # shifted Y, for plotting purposes
             ind=get_domain(f, sX,sY)
-            plt.pcolormesh(X,Y,ind, cmap='Greys', alpha=.5)
+            plt.pcolormesh(X,Y,ind, cmap='Greys', alpha=.5, edgecolor='none')
         plt.streamplot(X,Y,Ux,Uy)
