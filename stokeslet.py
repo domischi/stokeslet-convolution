@@ -100,8 +100,8 @@ def get_inflow_matrix(X,Y,Ux,Uy, normalize=True):
         for j in range(len(X[0])):
             io[i,j]= Ux[i,j]*X[i,j] + Uy[i,j]*Y[i,j]
     if normalize:
-        io_min=io.flatten().min()
-        io_max=io.flatten().max()
+        io_min=np.nanmin(io)
+        io_max=np.nanmax(io)
         if io_max>0:
             for i in range(len(X)):
                 for j in range(len(X[0])):
@@ -119,6 +119,7 @@ def make_streamplot(f, xmin=-3, xmax=3, ymin=-3,ymax=3, xres=20, yres=20, plot_s
     if abs(Ux).sum()+abs(Uy).sum()<=0:
         print(f"Warning: There seems to be an issue with this grid. I'm not plotting anything.\n(xmin={ xmin } ,xmax={ xmax } ,ymin={ ymin } ,ymax={ ymax } ,xres={ xres } ,yres={ yres })")
     else:
+        fig=plt.figure(figsize=(9,9))
         if plot_shape:
             dX=(X[0,1]-X[0,0])/2
             dY=(Y[1,0]-Y[0,0])/2
@@ -127,8 +128,9 @@ def make_streamplot(f, xmin=-3, xmax=3, ymin=-3,ymax=3, xres=20, yres=20, plot_s
             ind=get_domain(f, sX,sY)
             plt.pcolormesh(X,Y,ind, cmap='Greys', alpha=.5, edgecolor='none')
         if plot_io_pattern:
-            io=get_inflow_matrix(X,Y,Ux,Uy)
-            plt.pcolormesh(X,Y,io, cmap='bwr', alpha=.5)
+            io = get_inflow_matrix(X,Y,Ux,Uy)
+            im = plt.pcolormesh(X,Y,io, cmap='bwr', alpha=.3, vmin=-1, vmax=1)
+            fig.colorbar(im)
         if quiver_plot:
             plt.quiver(X,Y,Ux,Uy)
         else:
