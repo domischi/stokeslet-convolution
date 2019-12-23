@@ -111,7 +111,10 @@ def make_streamplot(f, xmin=-3, xmax=3, ymin=-3,ymax=3, xres=20, yres=20, plot_s
     if abs(Ux).sum()+abs(Uy).sum()<=0:
         print(f"Warning: There seems to be an issue with this grid. I'm not plotting anything.\n(xmin={ xmin } ,xmax={ xmax } ,ymin={ ymin } ,ymax={ ymax } ,xres={ xres } ,yres={ yres })")
     else:
-        fig=plt.figure(figsize=(9,9))
+        if plot_io_pattern:
+            fig=plt.figure(figsize=(11,9))
+        else:
+            fig=plt.figure(figsize=(9,9))
         if plot_shape:
             dX=(X[0,1]-X[0,0])/2
             dY=(Y[1,0]-Y[0,0])/2
