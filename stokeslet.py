@@ -100,18 +100,10 @@ def get_inflow_matrix(X,Y,Ux,Uy, normalize=True):
         for j in range(len(X[0])):
             io[i,j]= Ux[i,j]*X[i,j] + Uy[i,j]*Y[i,j]
     if normalize:
-        io_min=np.nanmin(io)
-        io_max=np.nanmax(io)
-        if io_max>0:
-            for i in range(len(X)):
-                for j in range(len(X[0])):
-                    if io[i,j]>=0:
-                        io[i,j]/=io_max
-        if io_min<0:
-            for i in range(len(X)):
-                for j in range(len(X[0])):
-                    if io[i,j]<=0:
-                        io[i,j]/=io_min
+        io_max=np.nanmax(abs(io))
+        for i in range(len(X)):
+            for j in range(len(X[0])):
+                io[i,j]/=io_max
     return io
 
 def make_streamplot(f, xmin=-3, xmax=3, ymin=-3,ymax=3, xres=20, yres=20, plot_shape=True, plot_io_pattern=False, quiver_plot=False):
@@ -129,7 +121,7 @@ def make_streamplot(f, xmin=-3, xmax=3, ymin=-3,ymax=3, xres=20, yres=20, plot_s
             plt.pcolormesh(X,Y,ind, cmap='Greys', alpha=.5, edgecolor='none')
         if plot_io_pattern:
             io = get_inflow_matrix(X,Y,Ux,Uy)
-            im = plt.pcolormesh(X,Y,io, cmap='bwr', alpha=.3, vmin=-1, vmax=1)
+            im = plt.pcolormesh(X,Y,io, cmap='bwr', alpha=.6, vmin=-1, vmax=1)
             fig.colorbar(im)
         if quiver_plot:
             plt.quiver(X,Y,Ux,Uy)
