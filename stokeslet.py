@@ -132,3 +132,4 @@ def make_streamplot(f, xmin=-3, xmax=3, ymin=-3,ymax=3, xres=20, yres=20, plot_s
             plt.streamplot(X,Y,Ux,Uy)
         plt.xlim([xmin,xmax])
         plt.ylim([ymin,ymax])
+        return fig
