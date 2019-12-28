@@ -10,7 +10,7 @@ import numba
 def stokeslet(x, mu=1.):
     l=norm(x)
     if l<1e-3:
-        return np.identity(2)*np.nan
+        l=1e-3 
     return (np.identity(2)/l+np.outer(x,x)/l**3)/(8*np.pi*mu)
 
 @numba.jit
@@ -19,6 +19,8 @@ def compute_velocity_field_at_point(f, Xu, int_grid_x, int_grid_y):
     Computes the velocity field at point x according by convoluting the force-field f (given as a function mapping R^2 to R^2) with the Stokeslet formulation, by evaluating a sum over a quadratic grid. This assumes a grid with uniform spacing to be passed
     """
     xu, yu = Xu[0], Xu[1]
+    if norm(f((xu,yu)))>0:
+        return np.nan, np.nan
     hx=int_grid_x[0,1]-int_grid_x[0,0]
     hy=int_grid_y[1,0]-int_grid_y[0,0]
     ux = 0
