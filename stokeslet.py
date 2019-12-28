@@ -159,8 +159,11 @@ def get_inflow_matrix(X,Y,Ux,Uy, normalize=True):
                 io[i,j]/=io_max
     return io
 
-def make_streamplot(f, xmin=-3, xmax=3, ymin=-3,ymax=3, xres=20, yres=20, plot_shape=True, plot_io_pattern=False, quiver_plot=False):
-    X,Y,Ux,Uy=compute_full_velocity_field(f, xmin, xmax, ymin, ymax, xres, yres)
+def make_streamplot(f, xmin=-3, xmax=3, ymin=-3,ymax=3, xres=20, yres=20, plot_shape=True, plot_io_pattern=False, quiver_plot=False, remove_force_shape=True, use_convolution_method=True): # todo implement the remove fore field shape as a flag
+    if use_convolution_method:
+        X,Y,Ux,Uy=compute_full_velocity_field_conv(f, xmin, xmax, ymin, ymax, xres, yres)
+    else:
+        X,Y,Ux,Uy=compute_full_velocity_field(f, xmin, xmax, ymin, ymax, xres, yres)
     if abs(Ux).sum()+abs(Uy).sum()<=0:
         print(f"Warning: There seems to be an issue with this grid. I'm not plotting anything.\n(xmin={ xmin } ,xmax={ xmax } ,ymin={ ymin } ,ymax={ ymax } ,xres={ xres } ,yres={ yres })")
     else:
