@@ -159,7 +159,38 @@ def get_inflow_matrix(X,Y,Ux,Uy, normalize=True):
                 io[i,j]/=io_max
     return io
 
-def make_streamplot(f, xmin=-3, xmax=3, ymin=-3,ymax=3, xres=20, yres=20, plot_shape=True, plot_io_pattern=False, quiver_plot=False, remove_force_shape=True, use_convolution_method=True): # todo implement the remove fore field shape as a flag
+def make_streamplot(f, xmin=-3, xmax=3, ymin=-3,ymax=3, xres=20, yres=20, plot_shape=True, plot_io_pattern=False, quiver_plot=False, use_convolution_method=True): # todo implement the remove fore field shape as a flag
+    """
+    Do all calculations and the figure plotting for a forcefield f using the Stokesian formulation of 2D hydrodynamics.
+
+    Parameters
+    ----------
+    f : function
+        Force-field. Expects a tuple (x,y) and maps it to a force (f1,f2) at this point.
+
+    xmin, xmax, ymin, ymax: scalar, optional
+        Set the bounding box for the calculation. If use_convolution_method is set, then the bounding box should be symmetric around (0,0), otherwise undefined behavior occurs.
+
+    xres, yres: int, optional
+        Resolution of the grid for f. Also the resolution for the grid used for the Stokeslet if use_convolution_method is false, otherwise the second grid uses approximately twice the number of points.
+
+    plot_shape: bool, optional
+        If set, the method tries to find where f attains a finite value and indicates this by a gray background.
+
+    plot_io_pattern: bool, optional
+        If set, in the background is the inflow or outflow indicated by a density map. Here, np.dot(x,v) is used to determine if the flow is towards the center or outwards of it.
+
+    quiver_plot: bool, optional
+        If set, the method used quiver rather than streamplot. Gives another way of interpreting the data.
+
+    use_convolution_method: bool, optional
+        If set, make_streamplot relies on compute_full_velocity_field_conv rather than compute_full_velocity_field to do the Stokeslet computation. This is orders of magnitudes faster, but relies on a symmetric grid and is less intuitively implemented.
+
+    Returns
+    -------
+    fig : matplotlib.pyplot.figure object
+        The figure that is generated
+    """
     if use_convolution_method:
         X,Y,Ux,Uy=compute_full_velocity_field_conv(f, xmin, xmax, ymin, ymax, xres, yres)
     else:
