@@ -190,6 +190,11 @@ def make_streamplot(f, xmin=-3, xmax=3, ymin=-3,ymax=3, xres=20, yres=20, plot_s
     -------
     fig : matplotlib.pyplot.figure object
         The figure that is generated
+
+    X, Y: ndarray, 2-dimensional
+        Grid for the velocities
+    Ux, Uy: ndarray, 2-dimensional
+        The velocity compnents along x and y respectively, evaluated on the grid positions given by X, Y
     """
     if use_convolution_method:
         X,Y,Ux,Uy=compute_full_velocity_field_conv(f, xmin, xmax, ymin, ymax, xres, yres)
@@ -219,4 +224,4 @@ def make_streamplot(f, xmin=-3, xmax=3, ymin=-3,ymax=3, xres=20, yres=20, plot_s
             plt.streamplot(X,Y,Ux,Uy)
         plt.xlim([xmin,xmax])
         plt.ylim([ymin,ymax])
-        return fig
+        return fig, X,Y, Ux,Uy
