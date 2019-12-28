@@ -40,6 +40,21 @@ def compute_velocity_field_at_point(f, Xu, int_grid_x, int_grid_y):
     uy*=hx*hy
     return ux, uy
 
+def get_f_on_grid(f, xmin=-3, xmax=3, ymin=-3,ymax=3, xres=20, yres=20):
+    X=np.linspace(xmin,xmax,xres)
+    Y=np.linspace(ymin,ymax,yres)
+    X, Y = np.meshgrid(X,Y)
+    gf = []
+    ## Sadly, I do need the append mechanism rather than a indexing. It seems to confuse entries of multidimensional arrays
+    for i in range(len(X)):
+        tmp=[]
+        for j in range(len(X[0])):
+            x=X[i,j]
+            y=Y[i,j]
+            tmp.append(f((x,y)))
+        gf.append(tmp)
+    return X, Y, np.array(gf)
+
 def compute_full_velocity_field_conv(f, xmin=-3, xmax=3, ymin=-3,ymax=3, xres=20, yres=20): 
     X=np.linspace(xmin,xmax,xres)
     Y=np.linspace(ymin,ymax,yres)
