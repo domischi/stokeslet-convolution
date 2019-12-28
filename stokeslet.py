@@ -5,6 +5,7 @@ import scipy as sp
 import scipy.integrate
 from tqdm import tqdm
 import numba
+from scipy.signal import convolve
 
 @numba.jit
 def stokeslet(x, mu=1.):
@@ -38,6 +39,39 @@ def compute_velocity_field_at_point(f, Xu, int_grid_x, int_grid_y):
     ux*=hx*hy
     uy*=hx*hy
     return ux, uy
+
+def compute_full_velocity_field_conv(f, xmin=-3, xmax=3, ymin=-3,ymax=3, xres=20, yres=20): 
+    X=np.linspace(xmin,xmax,xres)
+    Y=np.linspace(ymin,ymax,yres)
+    X, Y = np.meshgrid(X,Y)
+    hx=X[0,1]-X[0,0]
+    hy=Y[1,0]-Y[0,0]
+    ff_X = np.zeros_like(X)
+    ff_Y = np.zeros_like(X)
+    stokeslet_XX = np.zeros_like(X)
+    stokeslet_XY = np.zeros_like(X)
+    stokeslet_YY = np.zeros_like(X)
+    ind = np.zeros_like(X)
+    for i in range(len(X)):
+        for j in range(len(X[0])):
+            x=X[i,j]
+            y=Y[i,j]
+            ff_X[i,j], ff_Y[i,j] = f((x,y))
+            if ff_X[i,j]  != 0 or ff_Y[i,j] != 0:
+                ind[i,j] = 1
+            S = stokeslet((x,y))
+            stokeslet_XX[i,j] = S[0,0] * hx * hy
+            stokeslet_XY[i,j] = S[0,1] * hx * hy
+            stokeslet_YY[i,j] = S[1,1] * hx * hy
+    Ux = convolve(stokeslet_XX, ff_X, mode='same') + convolve(stokeslet_XY, ff_Y, mode='same')
+    Uy = convolve(stokeslet_XY, ff_X, mode='same') + convolve(stokeslet_YY, ff_Y, mode='same')
+    ## The velocity field does not make sense where there is a finite force field
+    for i in range(len(X)): 
+        for j in range(len(X[0])):
+            if ind[i,j]:
+                Ux[i,j]=np.nan
+                Uy[i,j]=np.nan
+    return X,Y,Ux,Uy
 
 def compute_full_velocity_field(f, xmin=-3, xmax=3, ymin=-3,ymax=3, xres=20, yres=20): 
     X=np.linspace(xmin,xmax,xres)
