@@ -61,7 +61,6 @@ def compute_full_velocity_field_conv(f, xmin=-3, xmax=3, ymin=-3,ymax=3, xres=20
     hy_f=Y[1,0]-Y[0,0]
     ff_X = ff[:,:,0]
     ff_Y = ff[:,:,1]
-    
     s_X, s_Y, s = get_f_on_grid(stokeslet, xmin=2*xmin, xmax=2*xmax, ymin=2*ymin, ymax=2*ymax, xres=2*xres-1, yres=2*yres-1)
     s = np.array(s)
     hx_s=s_X[0,1]-s_X[0,0]
@@ -83,7 +82,7 @@ def compute_full_velocity_field_conv(f, xmin=-3, xmax=3, ymin=-3,ymax=3, xres=20
     Ux *= hx_f*hy_f
     Uy *= hx_f*hy_f
     ## The velocity field does not make sense where there is a finite force field
-    for i in range(len(ind)): 
+    for i in range(len(ind)):
         for j in range(len(ind[0])):
             if ind[i,j]:
                 Ux[i,j]=np.nan
