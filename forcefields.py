@@ -28,9 +28,11 @@ def rect_forcefield_to_center_w_noise(x, a=1,b=1, sigma=.01):
 @numba.jit(nopython=True)
 def rect_annulus_forcefield_to_center(x, a=1,b=1, ap=0.9, bp=0.9):
     x=np.array(x)
-    if ((-a<=x[0] and x[0]<=-ap) or (ap<=x[0] and x[0]<=a)) and ((-b<=x[1] and x[1]<=-bp) or (bp<=x[1] and x[1]<=b)):
-        if norm(x)>1e-10:
-            return -x/norm(x)
+    #if ((-a<=x[0] and x[0]<=-ap) or (ap<=x[0] and x[0]<=a)) and ((-b<=x[1] and x[1]<=-bp) or (bp<=x[1] and x[1]<=b)):
+    if (-a<=x[0] and x[0]<=a) and (-b<=x[1] and x[1]<=b) :
+        if not ((-ap<=x[0] and x[0]<=ap) and (-bp<=x[1] and x[1]<=bp)):
+            if norm(x)>1e-10:
+                return -x/norm(x)
     return np.zeros(2)
 
 @numba.jit
