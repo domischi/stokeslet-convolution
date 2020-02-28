@@ -11,8 +11,9 @@ from scipy.signal import convolve
 def stokeslet(x, mu=1.):
     l=norm(x)
     if l<1e-3:
-        l=1e-3 
-    return (np.identity(2)/l+np.outer(x,x)/l**3)/(8*np.pi*mu)
+        l=1e-3
+    return (np.identity(2)*np.log(l**-1)+np.outer(x,x)/l**2)/(8*np.pi*mu) ## 2D version
+    #return (np.identity(2)/l+np.outer(x,x)/l**3)/(8*np.pi*mu) ## 3D version
 
 @numba.jit
 def compute_velocity_field_at_point(f, Xu, int_grid_x, int_grid_y):
