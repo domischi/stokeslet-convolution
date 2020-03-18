@@ -10,27 +10,26 @@ import matplotlib.pyplot as plt
 
 SAVEFIG=True
 
-ex = Experiment('Stokeslet Annulus')
-if SAVEFIG:
-    ex.observers.append(FileStorageObserver.create('data'))
+ex = Experiment('Stokeslet Rectangular non-normalized')
+ex.observers.append(MongoObserver.create())
 SETTINGS.CAPTURE_MODE = 'sys'
 ex.captured_out_filter = apply_backspaces_and_linefeeds
 
 @ex.config
 def cfg():
-    ARs=np.linspace(.10,1.00,10)
+    ARs=np.union1d(np.linspace(.10,1.00,10),np.linspace(.90,1.00,11))
+    mus=np.logspace(-2,2,5)
     res=200
-    thickness=[.1]
     L=2
 
 @ex.capture
-def one_AR(ar, res, L,t):
+def one_experiment(ar, res, L, mu):
     a=1
     b=float(ar)
-    fname=f'/tmp/AR_{int(100*float(ar))}_{int(t*10)}.png'
-    ff=lambda x: rect_annulus_forcefield_to_center(x,a=a, b=b, ap=a*(1- t ),bp=b*(1-t))
+    fname=f'/tmp/AR_{int(100*float(ar))}.png'
+    ff=lambda x: rect_forcefield_to_center_non_normalized(x,a=a, b=b)
     fig, _,_,_,_ = make_streamplot(ff,xmin=-L, xmax=L, ymin=-L, ymax=L, xres=res, yres=res, plot_io_pattern=True)
-    plt.title(f'AR={ar}, a={a:.0f}, b={b:.2f}')
+    plt.title(f"{ ex.get_experiment_info()['name'] }, AR={ar:.2f}, a={a:.0f}, b={b:.2f}")
     if SAVEFIG:
         plt.savefig(fname)
         ex.add_artifact(fname)
@@ -40,9 +39,7 @@ def one_AR(ar, res, L,t):
         plt.close(fig)
 
 @ex.automain
-def main(ARs, thickness):
-    for ar in ARs:
-        for t in thickness:
-    #for ar in tqdm(ARs):
-    #    for t in tqdm(thickness):
-            one_AR(ar,t=t)
+def main(ARs, mus):
+    for ar in tqdm(ARs):
+        for mu in mus:
+            one_AR(ar, mus)
